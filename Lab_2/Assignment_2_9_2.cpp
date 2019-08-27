@@ -157,7 +157,7 @@ int ludecomp(double a[][4], double lower[][4], double upper[][4],int n)
 	loo(i,0,n)
 	{
 		loo(j,0,n)
-			cout<<inverse[i][j]<<' ';
+			cout<<inverse[j][i]<<' ';
 		cout<<'\n';
 	}
 
