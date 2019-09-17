@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 #define loop(i,a,b) for(i=a;i<b;i++)
 using namespace std;
-#define N_MAX 26
+#define N_MAX 51
 void forward_subs(int n, double a[][N_MAX], double b[], double x[])
 {
 	// Function to do forward subsitution
@@ -217,7 +217,9 @@ int main()
 {
 int n,i,j,k;
 double a[N_MAX][N_MAX],b[N_MAX],x[N_MAX];
-n=N_MAX;
+cout<<"Enter the value of N : ";
+cin>>n;
+n++;
 mat_pop(n,a,b);
 cout<<"\nThe matrix A is : \n";
 loop(i,0,n)
@@ -231,12 +233,12 @@ loop(i,0,n)
 	cout<<b[i]<<' ';
 cout<<'\n';
 double lower[N_MAX][N_MAX],upper[N_MAX][N_MAX];
-ludecomp(a,lower,upper,b,x,N_MAX);
+ludecomp(a,lower,upper,b,x,n);
 //tdma(n,a,b,lower,upper);
 ofstream file;
 file.open("Solutions.txt");
-loop(i,0,N_MAX)
-	file<<(double)(3.00*i/n)<<' '<<x[i]<<'\n';
+loop(i,0,n)
+	file<<(double)(3.00*i/(n-1))<<' '<<x[i]<<'\n';
 file.close();
 return 0;
 }
