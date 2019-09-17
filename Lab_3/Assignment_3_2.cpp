@@ -34,6 +34,55 @@ void back_subs(int n, double a[][N_MAX], double b[], double x[])
 	x[i]=sum/a[i][i];
 	}
 }
+void pivoting(int n, double a[][N_MAX],double b[])
+{
+	int flag=1,i,j,k,max_indx;
+	double temp,max_val;
+	// The function swaps the rows suitably so that the final matrix has a[i][i] as the maximum value in the i-th row
+	loop(i,0,n-1)
+	{
+		// Initializing the initial values for maximum index and its corresponding value
+	    max_indx=i;
+	    max_val=abs(a[i][i]);
+		// Finding the index of the maximum value element
+		loop(j,i+1,n)
+		{
+			if(abs(a[j][i])>max_val)
+			{
+				// Changing the max_indx and max_val if some other element is greater than a[i][i]
+				max_indx=j;
+				max_val=abs(a[j][i]);
+			}
+		}
+		// Checking whether the a[i][i] is the maximum or not, if not swap it with the maximum
+    if(max_indx!=i)
+    {
+		// Swapping of i-th and max_indx row
+		// Corresponding changes are made in the b vector as well
+ 		loop(k,0,n)
+		{
+			temp=a[max_indx][k];
+			a[max_indx][k]=a[i][k];
+			a[i][k]=temp;
+		}
+		temp=b[max_indx];
+		b[max_indx]=b[i];
+		b[i]=temp;
+    }
+	}
+	// Printing the pivoted A matrix
+	cout<<"Pivoted Matrix A - \n";
+	loop(i,0,n)
+	{
+		loop(j,0,n)
+			cout<<a[i][j]<<' ';
+		cout<<'\n';
+	}
+	cout<<"\nPivoted B Vector - \n";
+	loop(i,0,n)
+		cout<<b[i]<<' ';
+}
+
 int ludecomp(double a[][N_MAX], double lower[][N_MAX], double upper[][N_MAX], double b[],double sol[],int n)
 {
 	// Function to perform LU Decomposition
@@ -47,6 +96,7 @@ int ludecomp(double a[][N_MAX], double lower[][N_MAX], double upper[][N_MAX], do
 			}
 	// Initializing the matrices to be zero
 	// Calculating the lower and upper matrices
+	pivoting(n,a,b);
     loop(i,0,n)
 	{
         loop(k,i,n)
@@ -115,10 +165,12 @@ double a[N_MAX][N_MAX],b[N_MAX],x[N_MAX];
 loop(i,0,N_MAX)
 	loop(j,0,N_MAX)
 	{
-		if(i>j)
+		if (j==n-1 || i==j)
+		a[i][j]=1; 	
+		else if(i>j)
 			a[i][j]=-1;
-		else
-		a[i][j]=1;
+		else 
+		a[i][j]=0;
 	}
 cout<<"\nThe given matrix is : \n";
 loop(i,0,n)
@@ -135,5 +187,6 @@ loop(i,0,n)
 cout<<'\n';
 double lower[N_MAX][N_MAX],upper[N_MAX][N_MAX];
 ludecomp(a,lower,upper,b,x,N_MAX);
+cout<<"Growth factor : "<<upper[n-1][n-1]<<'\n';
 return 0;
 }

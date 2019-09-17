@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 #define loop(i,a,b) for(i=a;i<b;i++)
 using namespace std;
-#define N_MAX 4
+#define N_MAX 26
 void forward_subs(int n, double a[][N_MAX], double b[], double x[])
 {
 	// Function to do forward subsitution
@@ -18,6 +18,7 @@ void forward_subs(int n, double a[][N_MAX], double b[], double x[])
 		x[i]=sum/a[i][i];
 	}
 }
+
 void back_subs(int n, double a[][N_MAX], double b[], double x[])
 {
 	// Function to do backward substitution
@@ -34,6 +35,74 @@ void back_subs(int n, double a[][N_MAX], double b[], double x[])
 	x[i]=sum/a[i][i];
 	}
 }
+void tdma(int n, double a[][N_MAX], double b[N_MAX],double lower[][N_MAX],double upper[][N_MAX])
+{
+	int i,j;
+	int sum=0;
+	double col[n],val[n],temp_sol[n],sol[n];
+	loop(i,0,n)
+	{
+		loop(j,0,n)
+		{
+		lower[i][j]=0;
+		upper[i][j]=0;		
+		}
+		lower[i][i]=1;	
+	}
+	upper[0][0]=a[0][0];
+	loop(i,1,n)
+	{
+	a[i][i-1]=a[i][i-1]/a[i-1][i-1];
+	a[i][i]=a[i][i]-a[i][i-1]*a[i-1][i];
+	lower[i][i-1]=a[i][i-1];
+	upper[i][i]=a[i][i];
+	upper[i-1][i]=a[i-1][i];
+	b[i]=b[i]-a[i][i-1]*b[i-1];
+	}
+	
+	// Printing the upper triangular matrix
+	cout<<"\nUpper triangular matrix : \n";
+	loop(i,0,n)
+	{
+		loop(j,0,n)
+			cout<<upper[i][j]<<' ';
+		cout<<'\n';
+	}
+	// Printing the lower triangular matrix
+	cout<<"\nLower triangular matrix : \n";
+	loop(i,0,n)
+	{
+		loop(j,0,n)
+			cout<<lower[i][j]<<' ';
+		cout<<'\n';
+	}
+	cout << "Modified B vector - " << '\n';
+	loop(i,0,n)
+		cout<<b[i]<<' ';
+
+	// Finding the inverse of the matrix using LU Decomposition
+ 	double Identity[N_MAX][N_MAX];
+	loop(i,0,n)
+	{
+		loop(j,0,n)
+			{
+			if(i==j)
+				Identity[i][j]=1;
+			else
+				Identity[i][j]=0;
+			}
+	}
+	int x;
+	// The idea is obtain the A inverse row wise and final construct the A inverse matrix
+	// Forward substitution is performed on Lower matrix and backward substitution is performed on upper matrix
+	// A inverse matrix is constructed from the back substitution
+	forward_subs(n,lower,b,temp_sol);
+	back_subs(n,upper,temp_sol,sol);
+	cout<<"The solutions for the given system - \n";
+	loop(i,0,n)
+		cout<<sol[i]<<'\n';
+}
+
 int ludecomp(double a[][N_MAX], double lower[][N_MAX], double upper[][N_MAX], double b[],double sol[],int n)
 {
 	// Function to perform LU Decomposition
@@ -109,7 +178,7 @@ int ludecomp(double a[][N_MAX], double lower[][N_MAX], double upper[][N_MAX], do
 }
 double function_x(float x)
 {
-	return (double) sin(5*x)
+	return (double) sin(5*x);
 }
 void mat_pop(int n,double a[][N_MAX],double b[])
 {
@@ -131,15 +200,17 @@ void mat_pop(int n,double a[][N_MAX],double b[])
 	a[0][1]=2;
 	a[n-1][n-1]=1;
 	a[n-1][n-2]=2;
-
+	int num=n;
+	n--;
+	// Boundary values for i=0 and i=N-1
+	b[0]=(n*(-2.5*function_x(0)+2*function_x((double)3.00*1/n)+0.5*function_x((double)3.00*2/n))/3.00);
+	b[num]=(n*(2.5*function_x(1)-2*function_x((double)3.00*(n-1)/n)-0.5*function_x((double)3.00*(n-2)/n))/3.00);
 	// Populating the B matrix
-	loop(i,1,n-1)
+	loop(i,1,num)
 	{
 		b[i]=n*(function_x((double)3.0*(i+1)/n)-function_x((double)3.0*(i-1)/n));
 	}
-	// Boundary values for i=0 and i=N-1
-	b[0]=(n*(-2.5*function_x(0)+2*function_x((double)3*1/n))+0.5*function_x(3*2/n)/3);
-	b[n-1]=(n*(2.5*function_x(1)-2*function_x((double)3*1/n))-0.5*function_x(3*(n-2)/n)/3))
+	n++;
 	// Printing the value of A and B matrix
 }
 int main()
@@ -155,13 +226,17 @@ loop(i,0,n)
 		cout<<a[i][j]<<' ';
 	cout<<'\n';
 	}
-loop(i,0,n)
-		b[i]=1;
 cout << "Given B vector - " << '\n';
 loop(i,0,n)
 	cout<<b[i]<<' ';
 cout<<'\n';
 double lower[N_MAX][N_MAX],upper[N_MAX][N_MAX];
 ludecomp(a,lower,upper,b,x,N_MAX);
+//tdma(n,a,b,lower,upper);
+ofstream file;
+file.open("Solutions.txt");
+loop(i,0,N_MAX)
+	file<<(double)(3.00*i/n)<<' '<<x[i]<<'\n';
+file.close();
 return 0;
 }
